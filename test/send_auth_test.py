@@ -5,8 +5,8 @@ import logging
 import time
 import uuid
 import requests
-from signalrcore_new.hub_connection_builder import HubConnectionBuilder
-from signalrcore_new.protocol.messagepack_protocol import MessagePackHubProtocol
+from signalrcore1.hub_connection_builder import HubConnectionBuilder
+from signalrcore1.protocol.messagepack_protocol import MessagePackHubProtocol
 from test.base_test_case import BaseTestCase, Urls
 
 class TestSendAuthMethod(BaseTestCase):

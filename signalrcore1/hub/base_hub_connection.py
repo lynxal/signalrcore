@@ -1,10 +1,10 @@
 import uuid
 from typing import Callable
-from signalrcore_new.messages.message_type import MessageType
-from signalrcore_new.messages.stream_invocation_message\
+from signalrcore1.messages.message_type import MessageType
+from signalrcore1.messages.stream_invocation_message\
     import StreamInvocationMessage
 from .errors import HubConnectionError
-from signalrcore_new.helpers import Helpers
+from signalrcore1.helpers import Helpers
 from .handlers import StreamHandler, InvocationHandler
 from ..transport.websockets.websocket_transport import WebsocketTransport
 from ..helpers import Helpers

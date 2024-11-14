@@ -1,8 +1,8 @@
 import unittest
 import logging
 import time
-from signalrcore_new.hub_connection_builder import HubConnectionBuilder
-from signalrcore_new.protocol.messagepack_protocol import MessagePackHubProtocol
+from signalrcore1.hub_connection_builder import HubConnectionBuilder
+from signalrcore1.protocol.messagepack_protocol import MessagePackHubProtocol
 
 class Urls:
     server_url_no_ssl = "ws://localhost:5000/chatHub"

@@ -5,7 +5,7 @@ import time
 
 sys.path.append("./")
 
-from signalrcore_new.hub_connection_builder import HubConnectionBuilder
+from signalrcore1.hub_connection_builder import HubConnectionBuilder
 
 connection = HubConnectionBuilder()\
     .with_url("wss://localhost:5001/chathub", options={"verify_ssl": False})\

@@ -1,6 +1,6 @@
 import websocket
 import logging
-from signalrcore_new.hub_connection_builder import HubConnectionBuilder
+from signalrcore1.hub_connection_builder import HubConnectionBuilder
 
 from test.base_test_case import BaseTestCase, Urls
 

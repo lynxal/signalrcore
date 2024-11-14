@@ -188,13 +188,13 @@ hub_connection = HubConnectionBuilder()\
 ## Configure messagepack
 
 ```python
-from signalrcore_new.protocol.messagepack_protocol import MessagePackHubProtocol
+from signalrcore1.protocol.messagepack_protocol import MessagePackHubProtocol
 
 HubConnectionBuilder()
-    .with_url(self.server_url, options={"verify_ssl": False})
-    ...
+.with_url(self.server_url, options={"verify_ssl": False})
+...
 .with_hub_protocol(MessagePackHubProtocol())
-    ...
+...
 .build()
 ```
 ## Events
@@ -251,7 +251,7 @@ hub_connection.stream(
 ## Client side Streaming
 
 ```python
-from signalrcore_new.subject import Subject
+from signalrcore1.subject import Subject
 
 subject = Subject()
 
@@ -276,7 +276,7 @@ A mini example could be something like this:
 ```python
 import logging
 import sys
-from signalrcore_new.hub_connection_builder import HubConnectionBuilder
+from signalrcore1.hub_connection_builder import HubConnectionBuilder
 
 
 def input_with_default(input_text, default_value):
@@ -289,9 +289,9 @@ username = input_with_default('Enter your username (default: {0}): ', "mandrewci
 handler = logging.StreamHandler()
 handler.setLevel(logging.DEBUG)
 hub_connection = HubConnectionBuilder()
-    .with_url(server_url, options={"verify_ssl": False})
-    .configure_logging(logging.DEBUG, socket_trace=True, handler=handler)
-    .with_automatic_reconnect({
+.with_url(server_url, options={"verify_ssl": False})
+.configure_logging(logging.DEBUG, socket_trace=True, handler=handler)
+.with_automatic_reconnect({
     "type": "interval",
     "keep_alive_interval": 10,
     "intervals": [1, 3, 5, 6, 7, 87, 3]

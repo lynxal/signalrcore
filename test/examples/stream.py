@@ -2,7 +2,7 @@
 import time
 import sys
 sys.path.append("./")
-from signalrcore_new.hub_connection_builder import HubConnectionBuilder
+from signalrcore1.hub_connection_builder import HubConnectionBuilder
 import logging
 
 

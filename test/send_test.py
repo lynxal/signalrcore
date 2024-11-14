@@ -6,8 +6,8 @@ import time
 import uuid
 import threading
 
-from signalrcore_new.hub_connection_builder import HubConnectionBuilder
-from signalrcore_new.hub.errors import HubError, HubConnectionError
+from signalrcore1.hub_connection_builder import HubConnectionBuilder
+from signalrcore1.hub.errors import HubError, HubConnectionError
 from test.base_test_case import BaseTestCase, Urls
 
 class TestSendException(BaseTestCase):

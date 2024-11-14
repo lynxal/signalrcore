@@ -1,7 +1,7 @@
 import requests
 import sys
 sys.path.append("./")
-from signalrcore_new.hub_connection_builder import HubConnectionBuilder
+from signalrcore1.hub_connection_builder import HubConnectionBuilder
 
 
 def print_message(x):
