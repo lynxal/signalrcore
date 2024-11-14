@@ -5,8 +5,8 @@ import time
 import uuid
 
 from subprocess import Popen, PIPE
-from signalrcore.hub_connection_builder import HubConnectionBuilder
-from signalrcore.subject import Subject
+from signalrcore_new.hub_connection_builder import HubConnectionBuilder
+from signalrcore_new.subject import Subject
 from test.base_test_case import BaseTestCase, Urls
 
 class TestClientStreamMethod(BaseTestCase):
