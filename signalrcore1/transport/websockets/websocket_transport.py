@@ -7,9 +7,8 @@ import ssl
 from .reconnection import ConnectionStateChecker
 from .connection import ConnectionState
 from ...messages.ping_message import PingMessage
-from ...hub.errors import HubError, HubConnectionError, UnAuthorizedHubError
+from ...hub.errors import HubError, UnAuthorizedHubError
 from ...protocol.messagepack_protocol import MessagePackHubProtocol
-from ...protocol.json_hub_protocol import JsonHubProtocol
 from ..base_transport import BaseTransport
 from ...helpers import Helpers
 
@@ -53,11 +52,11 @@ class WebsocketTransport(BaseTransport):
         return self.state != ConnectionState.disconnected
 
     def stop(self):
+        self.connection_checker.stop()
         if self.state == ConnectionState.connected:
-            self.connection_checker.stop()
             self._ws.close()
-            self.state = ConnectionState.disconnected
-            self.handshake_received = False
+        self.state = ConnectionState.disconnected
+        self.handshake_received = False
 
     def start(self):
         if not self.skip_negotiation:
@@ -78,14 +77,10 @@ class WebsocketTransport(BaseTransport):
             on_close=self.on_close,
             on_open=self.on_open,
             )
-            
-        self._thread = threading.Thread(
-            target=lambda: self._ws.run_forever(
-                sslopt={"cert_reqs": ssl.CERT_NONE}
-                if not self.verify_ssl else {}
-            ))
-        self._thread.daemon = True
-        self._thread.start()
+
+        self._ws.run_forever(
+            sslopt={"cert_reqs": ssl.CERT_NONE} if not self.verify_ssl else {},
+        )
         return True
 
     def negotiate(self):
@@ -227,7 +222,10 @@ class WebsocketTransport(BaseTransport):
         except Exception as ex:
             self.logger.error(ex)
             sleep_time = self.reconnection_handler.next()
-            self.deferred_reconnect(sleep_time)
+            threading.Thread(
+                target=self.deferred_reconnect,
+                args=(sleep_time,)
+            ).start()
 
     def deferred_reconnect(self, sleep_time):
         time.sleep(sleep_time)
