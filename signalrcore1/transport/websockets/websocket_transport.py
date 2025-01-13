@@ -217,7 +217,10 @@ class WebsocketTransport(BaseTransport):
             self._on_reconnect()
         self.reconnection_handler.reconnecting = True
         try:
-            self.stop()
+            try:
+                self.stop()
+            except Exception as e:
+                self.logger.error(e)
             self.start()
         except Exception as ex:
             self.logger.error(ex)
