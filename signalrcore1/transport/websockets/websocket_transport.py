@@ -67,7 +67,7 @@ class WebsocketTransport(BaseTransport):
             return False
 
         self.state = ConnectionState.connecting
-        self.logger.debug("start url:" + self.url)
+        self.logger.info("start url:" + self.url)
         
         self._ws = websocket.WebSocketApp(
             self.url,
@@ -85,11 +85,11 @@ class WebsocketTransport(BaseTransport):
 
     def negotiate(self):
         negotiate_url = Helpers.get_negotiate_url(self.url)
-        self.logger.debug("Negotiate url:{0}".format(negotiate_url))
+        self.logger.info("Negotiate url:{0}".format(negotiate_url))
 
         response = requests.post(
             negotiate_url, headers=self.headers, verify=self.verify_ssl)
-        self.logger.debug(
+        self.logger.info(
             "Response status code{0}".format(response.status_code))
 
         if response.status_code != 200:
