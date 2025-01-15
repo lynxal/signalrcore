@@ -14,14 +14,15 @@ from ...helpers import Helpers
 
 class WebsocketTransport(BaseTransport):
     def __init__(self,
-            url="",
-            headers=None,
-            keep_alive_interval=15,
-            reconnection_handler=None,
-            verify_ssl=False,
-            skip_negotiation=False,
-            enable_trace=False,
-            **kwargs):
+                 url="",
+                 headers=None,
+                 keep_alive_interval=15,
+                 reconnection_handler=None,
+                 verify_ssl=False,
+                 skip_negotiation=False,
+                 enable_trace=False,
+                 get_bearer_token=None,
+                 **kwargs):
         super(WebsocketTransport, self).__init__(**kwargs)
         self._ws = None
         self.enable_trace = enable_trace
@@ -32,6 +33,7 @@ class WebsocketTransport(BaseTransport):
             self.headers = dict()
         else:
             self.headers = headers
+        self.get_bearer_token = get_bearer_token
         self.handshake_received = False
         self.token = None  # auth
         self.state = ConnectionState.disconnected
@@ -51,6 +53,10 @@ class WebsocketTransport(BaseTransport):
     def is_running(self):
         return self.state != ConnectionState.disconnected
 
+    def initialize_auth_header(self):
+        if self.get_bearer_token is not None:
+            self.headers["Authorization"] = "Bearer " + self.get_bearer_token()
+
     def stop(self):
         self.connection_checker.stop()
         if self.state == ConnectionState.connected:
@@ -68,7 +74,8 @@ class WebsocketTransport(BaseTransport):
 
         self.state = ConnectionState.connecting
         self.logger.info("start url:" + self.url)
-        
+
+        self.initialize_auth_header()
         self._ws = websocket.WebSocketApp(
             self.url,
             header=self.headers,
@@ -87,14 +94,14 @@ class WebsocketTransport(BaseTransport):
         negotiate_url = Helpers.get_negotiate_url(self.url)
         self.logger.info("Negotiate url:{0}".format(negotiate_url))
 
+        self.initialize_auth_header()
         response = requests.post(
             negotiate_url, headers=self.headers, verify=self.verify_ssl)
         self.logger.info(
             "Response status code{0}".format(response.status_code))
 
         if response.status_code != 200:
-            raise HubError(response.status_code)\
-                if response.status_code != 401 else UnAuthorizedHubError()
+            raise HubError(response.status_code) if response.status_code != 401 else UnAuthorizedHubError()
 
         data = response.json()
 

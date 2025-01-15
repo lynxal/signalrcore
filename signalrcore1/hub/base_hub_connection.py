@@ -1,7 +1,7 @@
 import uuid
 from typing import Callable
 from signalrcore1.messages.message_type import MessageType
-from signalrcore1.messages.stream_invocation_message\
+from signalrcore1.messages.stream_invocation_message \
     import StreamInvocationMessage
 from .errors import HubConnectionError
 from signalrcore1.helpers import Helpers
@@ -11,10 +11,12 @@ from ..helpers import Helpers
 from ..subject import Subject
 from ..messages.invocation_message import InvocationMessage
 
+
 class InvocationResult(object):
     def __init__(self, invocation_id) -> None:
         self.invocation_id = invocation_id
         self.message = None
+
 
 class BaseHubConnection(object):
     def __init__(
@@ -22,6 +24,7 @@ class BaseHubConnection(object):
             url,
             protocol,
             headers=None,
+            get_bearer_token=None,
             **kwargs):
         if headers is None:
             self.headers = dict()
@@ -37,6 +40,7 @@ class BaseHubConnection(object):
             protocol=protocol,
             headers=self.headers,
             on_message=self.on_message,
+            get_bearer_token=get_bearer_token,
             **kwargs)
 
     def start(self):
@@ -137,20 +141,18 @@ class BaseHubConnection(object):
                     InvocationHandler(
                         message.invocation_id,
                         on_invocation))
-            
+
             self.transport.send(message)
             result.message = message
-        
+
         if type(arguments) is Subject:
             arguments.connection = self
             arguments.target = method
             arguments.start()
             result.invocation_id = arguments.invocation_id
             result.message = arguments
-        
 
         return result
-
 
     def on_message(self, messages):
         for message in messages:
@@ -258,4 +260,3 @@ class BaseHubConnection(object):
                 event_params,
                 headers=self.headers))
         return stream_obj
-    

@@ -9,15 +9,15 @@ class AuthHubConnection(BaseHubConnection):
         else:
             self.headers = headers
         self.auth_function = auth_function
-        super(AuthHubConnection, self).__init__(headers=headers, **kwargs)
+        super(AuthHubConnection, self).__init__(headers=headers, get_bearer_token=auth_function, **kwargs)
 
     def start(self):
         try:
             Helpers.get_logger().debug("Starting connection ...")
-            self.token = self.auth_function()
+            token = self.auth_function()
             Helpers.get_logger()\
-                .debug("auth function result {0}".format(self.token))
-            self.headers["Authorization"] = "Bearer " + self.token
+                .debug("auth function result {0}".format(token))
+            self.headers["Authorization"] = "Bearer " + token
             return super(AuthHubConnection, self).start()
         except Exception as ex:
             Helpers.get_logger().warning(self.__class__.__name__)
