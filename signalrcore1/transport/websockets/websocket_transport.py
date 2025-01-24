@@ -135,6 +135,8 @@ class WebsocketTransport(BaseTransport):
             self.on_socket_error(self._ws, msg.error)
             self.stop()
             self.state = ConnectionState.disconnected
+            # reconnect
+            self.send(PingMessage())
         return messages
 
     def on_open(self, _):
