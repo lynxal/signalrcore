@@ -218,6 +218,7 @@ class WebsocketTransport(BaseTransport):
             # Connection closed
             self.handle_reconnect()
         except Exception as ex:
+            self.logger.error("Error during sending message: {0}".format(ex))
             raise ex
 
     def handle_reconnect(self):
