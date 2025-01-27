@@ -175,9 +175,10 @@ class BaseHubConnection(object):
                     handler(message.arguments)
 
             if message.type == MessageType.close:
-                self.logger.info("Close message received from server")
+                self.logger.info(f"Close message received from server message: {message}")
                 self.stop()
-                return
+                self.start()
+                # return
 
             if message.type == MessageType.completion:
                 if message.error is not None and len(message.error) > 0:
