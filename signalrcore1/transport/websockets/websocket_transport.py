@@ -55,7 +55,10 @@ class WebsocketTransport(BaseTransport):
 
     def initialize_auth_header(self):
         if self.get_bearer_token is not None:
-            self.headers["Authorization"] = "Bearer " + self.get_bearer_token()
+            try:
+                self.headers["Authorization"] = "Bearer " + self.get_bearer_token()
+            except Exception as e:
+                self.logger.error(f"Error during initializing auth ex:{e}")
 
     def stop(self):
         self.connection_checker.stop()
@@ -95,6 +98,7 @@ class WebsocketTransport(BaseTransport):
         self.logger.info("Negotiate url:{0}".format(negotiate_url))
 
         self.initialize_auth_header()
+        self.logger.info("Authorization:{0}".format(self.headers["Authorization"]))
         response = requests.post(
             negotiate_url, headers=self.headers, verify=self.verify_ssl)
         self.logger.info(
