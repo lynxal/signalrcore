@@ -79,6 +79,7 @@ class WebsocketTransport(BaseTransport):
         self.logger.info("start url:" + self.url)
 
         self.initialize_auth_header()
+        self.logger.info(f"Function start Authorization:{self.headers['Authorization']}")
         self._ws = websocket.WebSocketApp(
             self.url,
             header=self.headers,
@@ -135,7 +136,7 @@ class WebsocketTransport(BaseTransport):
                 if not self.connection_checker.running:
                     self.connection_checker.start()
         else:
-            self.logger.error(msg.error)
+            self.logger.error(f"evaluate_handshake message: {msg.error}")
             self.on_socket_error(self._ws, msg.error)
             self.stop()
             self.state = ConnectionState.disconnected
@@ -198,7 +199,7 @@ class WebsocketTransport(BaseTransport):
             self.protocol.parse_messages(raw_message))
 
     def send(self, message):
-        self.logger.info("Sending message {0}".format(message))
+        self.logger.debug("Sending message {0}".format(message))
         try:
             self._ws.send(
                 self.protocol.encode(message),
@@ -212,7 +213,6 @@ class WebsocketTransport(BaseTransport):
                 websocket._exceptions.WebSocketConnectionClosedException,
                 OSError) as ex:
             self.handshake_received = False
-            self.logger.warning(f"Connection closed")
             self.logger.warning(f"Connection closed {ex}")
             self.state = ConnectionState.disconnected
             if self.reconnection_handler is None:
@@ -248,8 +248,11 @@ class WebsocketTransport(BaseTransport):
     def deferred_reconnect(self, sleep_time):
         time.sleep(sleep_time)
         try:
+            self.logger.info("deferred_reconnect")
             if not self.connection_alive:
+                self.logger.info("connection_alive")
                 if not self.connection_checker.running:
+                    self.logger.info("connection_checker.running")
                     self.send(PingMessage())
         except Exception as ex:
             self.logger.error(ex)
