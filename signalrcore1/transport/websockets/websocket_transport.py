@@ -198,7 +198,7 @@ class WebsocketTransport(BaseTransport):
             self.protocol.parse_messages(raw_message))
 
     def send(self, message):
-        self.logger.debug("Sending message {0}".format(message))
+        self.logger.info("Sending message {0}".format(message))
         try:
             self._ws.send(
                 self.protocol.encode(message),
@@ -212,7 +212,8 @@ class WebsocketTransport(BaseTransport):
                 websocket._exceptions.WebSocketConnectionClosedException,
                 OSError) as ex:
             self.handshake_received = False
-            self.logger.warning("Connection closed {0}".format(ex))
+            self.logger.warning(f"Connection closed")
+            self.logger.warning(f"Connection closed {ex}")
             self.state = ConnectionState.disconnected
             if self.reconnection_handler is None:
                 if self._on_close is not None and\
