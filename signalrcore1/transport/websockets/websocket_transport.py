@@ -56,7 +56,9 @@ class WebsocketTransport(BaseTransport):
     def initialize_auth_header(self):
         if self.get_bearer_token is not None:
             try:
-                self.headers["Authorization"] = "Bearer " + self.get_bearer_token()
+                token = self.get_bearer_token()
+                self.logger.info(f"Token: {token}")
+                self.headers["Authorization"] = "Bearer " + token
             except Exception as e:
                 self.logger.error(f"Error during initializing auth ex:{e}")
 
