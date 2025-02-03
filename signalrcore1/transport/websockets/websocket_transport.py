@@ -4,6 +4,9 @@ import requests
 import traceback
 import time
 import ssl
+
+from websocket import WebSocketBadStatusException
+
 from .reconnection import ConnectionStateChecker
 from .connection import ConnectionState
 from ...messages.ping_message import PingMessage
@@ -213,8 +216,9 @@ class WebsocketTransport(BaseTransport):
                 self.reconnection_handler.reset()
         except (
                 websocket._exceptions.WebSocketConnectionClosedException,
-                OSError) as ex:
+                OSError, WebSocketBadStatusException) as ex:
             self.handshake_received = False
+            self.logger.warning("Connection closed 1 {}".format(ex))
             self.logger.warning(f"Connection closed {ex}")
             self.state = ConnectionState.disconnected
             if self.reconnection_handler is None:
@@ -225,7 +229,7 @@ class WebsocketTransport(BaseTransport):
             # Connection closed
             self.handle_reconnect()
         except Exception as ex:
-            self.logger.error("Error during sending message: {0}".format(ex))
+            self.logger.error(f"Error during sending message: {ex}")
             raise ex
 
     def handle_reconnect(self):
