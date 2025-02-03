@@ -241,11 +241,12 @@ class WebsocketTransport(BaseTransport):
             try:
                 self.stop()
             except Exception as e:
-                self.logger.error(e)
+                self.logger.error(f"Error during stop ex: {e}")
             self.start()
         except Exception as ex:
-            self.logger.error(ex)
+            self.logger.error(f"Error during start ex: {ex}")
             sleep_time = self.reconnection_handler.next()
+            self.logger.error("reconnection_handler.next")
             threading.Thread(
                 target=self.deferred_reconnect,
                 args=(sleep_time,)
