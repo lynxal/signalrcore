@@ -44,6 +44,7 @@ class WebsocketTransport(BaseTransport):
         self._thread = None
         self._ws = None
         self.verify_ssl = verify_ssl
+        self._keep_alive_interval = keep_alive_interval
         self.connection_checker = ConnectionStateChecker(
             lambda: self.send(PingMessage()),
             keep_alive_interval
@@ -93,9 +94,9 @@ class WebsocketTransport(BaseTransport):
             on_close=self.on_close,
             on_open=self.on_open,
             )
-
         self._ws.run_forever(
             sslopt={"cert_reqs": ssl.CERT_NONE} if not self.verify_ssl else {},
+            reconnect=self._keep_alive_interval
         )
         return True
 
@@ -216,6 +217,7 @@ class WebsocketTransport(BaseTransport):
                 self.reconnection_handler.reset()
         except (
                 websocket._exceptions.WebSocketConnectionClosedException,
+                websocket._exceptions.WebSocketBadStatusException,
                 OSError, WebSocketBadStatusException) as ex:
             self.handshake_received = False
             self.logger.warning("Connection closed 1 {}".format(ex))
