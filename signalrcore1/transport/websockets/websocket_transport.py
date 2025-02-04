@@ -68,8 +68,7 @@ class WebsocketTransport(BaseTransport):
 
     def stop(self):
         self.connection_checker.stop()
-        if self.state == ConnectionState.connected:
-            self._ws.close()
+        self._ws.close()
         self.state = ConnectionState.disconnected
         self.handshake_received = False
 
@@ -132,7 +131,7 @@ class WebsocketTransport(BaseTransport):
 
 
     def evaluate_handshake(self, message):
-        self.logger.debug("Evaluating handshake {0}".format(message))
+        self.logger.info("Evaluating handshake {0}".format(message))
         msg, messages = self.protocol.decode_handshake(message)
         if msg.error is None or msg.error == "":
             self.handshake_received = True
@@ -147,7 +146,7 @@ class WebsocketTransport(BaseTransport):
             self.stop()
             self.state = ConnectionState.disconnected
             # reconnect
-            self.send(PingMessage())
+            # self.send(PingMessage())
         return messages
 
     def on_open(self, _):
@@ -156,9 +155,9 @@ class WebsocketTransport(BaseTransport):
         self.send(msg)
 
     def on_close(self, callback, close_status_code, close_reason):
-        self.logger.debug("-- web socket close --")
-        self.logger.debug(close_status_code)
-        self.logger.debug(close_reason)
+        self.logger.info("-- web socket close --")
+        self.logger.info(close_status_code)
+        self.logger.info(close_reason)
         self.state = ConnectionState.disconnected
         if self._on_close is not None and callable(self._on_close):
             self._on_close()
@@ -205,7 +204,7 @@ class WebsocketTransport(BaseTransport):
             self.protocol.parse_messages(raw_message))
 
     def send(self, message, **kwargs):
-        self.logger.debug("Sending message {0}".format(message))
+        self.logger.info("Sending message {0}".format(message))
         try:
             self._ws.send(
                 self.protocol.encode(message),
