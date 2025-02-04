@@ -94,8 +94,7 @@ class WebsocketTransport(BaseTransport):
             on_open=self.on_open,
             )
         self._ws.run_forever(
-            sslopt={"cert_reqs": ssl.CERT_NONE} if not self.verify_ssl else {},
-            reconnect=self._keep_alive_interval
+            sslopt={"cert_reqs": ssl.CERT_NONE} if not self.verify_ssl else {}
         )
         return True
 
