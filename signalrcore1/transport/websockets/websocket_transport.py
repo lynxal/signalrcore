@@ -162,6 +162,9 @@ class WebsocketTransport(BaseTransport):
             self._on_close()
         if callback is not None and callable(callback):
             callback()
+        if not self.reconnection_handler.reconnecting and close_status_code is None:
+            self.handle_reconnect()
+
 
     def on_reconnect(self):
         self.logger.debug("-- web socket reconnecting --")
