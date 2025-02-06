@@ -162,8 +162,8 @@ class WebsocketTransport(BaseTransport):
             self._on_close()
         if callback is not None and callable(callback):
             callback()
-        self.logger.info(f"reconnection_handler.reconnecting {self.reconnection_handler.reconnecting}")
-        if not self.reconnection_handler.reconnecting and close_status_code is None:
+        if close_status_code is None:
+            self.logger.info("Send ping for reconnect")
             self.send(PingMessage())
 
     def on_reconnect(self):
