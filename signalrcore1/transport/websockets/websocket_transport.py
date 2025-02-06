@@ -15,6 +15,7 @@ from ...protocol.messagepack_protocol import MessagePackHubProtocol
 from ..base_transport import BaseTransport
 from ...helpers import Helpers
 
+
 class WebsocketTransport(BaseTransport):
     def __init__(self,
                  url="",
@@ -53,7 +54,7 @@ class WebsocketTransport(BaseTransport):
 
         if len(self.logger.handlers) > 0:
             websocket.enableTrace(self.enable_trace, self.logger.handlers[0])
-    
+
     def is_running(self):
         return self.state != ConnectionState.disconnected
 
@@ -92,7 +93,7 @@ class WebsocketTransport(BaseTransport):
             on_error=self.on_socket_error,
             on_close=self.on_close,
             on_open=self.on_open,
-            )
+        )
         self._ws.run_forever(
             sslopt={"cert_reqs": ssl.CERT_NONE} if not self.verify_ssl else {}
         )
@@ -122,12 +123,11 @@ class WebsocketTransport(BaseTransport):
         if 'url' in data.keys() and 'accessToken' in data.keys():
             Helpers.get_logger().debug(
                 "Azure url, reformat headers, token and url {0}".format(data))
-            self.url = data["url"]\
-                if data["url"].startswith("ws") else\
+            self.url = data["url"] \
+                if data["url"].startswith("ws") else \
                 Helpers.http_to_websocket(data["url"])
             self.token = data["accessToken"]
             self.headers = {"Authorization": "Bearer " + self.token}
-
 
     def evaluate_handshake(self, message):
         self.logger.info("Evaluating handshake {0}".format(message))
@@ -162,9 +162,9 @@ class WebsocketTransport(BaseTransport):
             self._on_close()
         if callback is not None and callable(callback):
             callback()
+        self.logger.info(f"reconnection_handler.reconnecting {self.reconnection_handler.reconnecting}")
         if not self.reconnection_handler.reconnecting and close_status_code is None:
-            self.handle_reconnect()
-
+            self.send(PingMessage())
 
     def on_reconnect(self):
         self.logger.debug("-- web socket reconnecting --")
@@ -187,7 +187,7 @@ class WebsocketTransport(BaseTransport):
         self.logger.error("{0} {1}".format(error, type(error)))
         self._on_close()
         self.state = ConnectionState.disconnected
-        #raise HubError(error)
+        # raise HubError(error)
 
     def on_message(self, app, raw_message):
         self.logger.debug("Message received{0}".format(raw_message))
@@ -201,7 +201,7 @@ class WebsocketTransport(BaseTransport):
                 return self._on_message(messages)
 
             return []
-        
+
         return self._on_message(
             self.protocol.parse_messages(raw_message))
 
@@ -225,7 +225,7 @@ class WebsocketTransport(BaseTransport):
             self.logger.warning(f"Connection closed {ex}")
             self.state = ConnectionState.disconnected
             if self.reconnection_handler is None:
-                if self._on_close is not None and\
+                if self._on_close is not None and \
                         callable(self._on_close):
                     self._on_close()
                 raise ValueError(str(ex))
@@ -261,9 +261,7 @@ class WebsocketTransport(BaseTransport):
             self.logger.info("deferred_reconnect")
             if not self.connection_alive:
                 self.logger.info("connection_alive")
-                if not self.connection_checker.running:
-                    self.logger.info("connection_checker.running")
-                    self.send(PingMessage())
+                self.send(PingMessage())
         except Exception as ex:
             self.logger.error(ex)
             self.reconnection_handler.reconnecting = False
