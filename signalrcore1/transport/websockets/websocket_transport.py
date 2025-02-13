@@ -68,6 +68,7 @@ class WebsocketTransport(BaseTransport):
                 self.logger.error(f"Error during initializing auth ex:{e}")
 
     def stop(self):
+        self.logger.warning(f'stop: connection_checker.running {self.connection_checker.running}')
         self.connection_checker.stop()
         self._ws.close()
         self.state = ConnectionState.disconnected
@@ -154,7 +155,8 @@ class WebsocketTransport(BaseTransport):
         self.send(msg)
 
     def on_close(self, callback, close_status_code, close_reason):
-        self.logger.info("-- web socket close --")
+        self.logger.warning("-- web socket close --")
+        self.logger.warning(f'connection_checker.running {self.connection_checker.running}')
         self.logger.info(close_status_code)
         self.logger.info(close_reason)
         self.state = ConnectionState.disconnected
@@ -258,7 +260,7 @@ class WebsocketTransport(BaseTransport):
     def deferred_reconnect(self, sleep_time):
         time.sleep(sleep_time)
         try:
-            self.logger.info("deferred_reconnect")
+            self.logger.warning("deferred_reconnect")
             if not self.connection_alive:
                 self.logger.info("connection_alive")
                 self.send(PingMessage())
