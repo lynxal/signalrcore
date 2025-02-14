@@ -26,7 +26,7 @@ class WebsocketTransport(BaseTransport):
                  skip_negotiation=False,
                  enable_trace=False,
                  get_bearer_token=None,
-                 on_error_callback=None,
+                 on_error=None,
                  **kwargs):
         super(WebsocketTransport, self).__init__(**kwargs)
         self._ws = None
@@ -34,7 +34,7 @@ class WebsocketTransport(BaseTransport):
         self._thread = None
         self.skip_negotiation = skip_negotiation
         self.url = url
-        self._on_error=on_error_callback
+        self._on_error=on_error
         if headers is None:
             self.headers = dict()
         else:
