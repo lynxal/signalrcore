@@ -26,6 +26,7 @@ class WebsocketTransport(BaseTransport):
                  skip_negotiation=False,
                  enable_trace=False,
                  get_bearer_token=None,
+                 on_error_callback=None,
                  **kwargs):
         super(WebsocketTransport, self).__init__(**kwargs)
         self._ws = None
@@ -33,6 +34,7 @@ class WebsocketTransport(BaseTransport):
         self._thread = None
         self.skip_negotiation = skip_negotiation
         self.url = url
+        self._on_error=on_error_callback
         if headers is None:
             self.headers = dict()
         else:
@@ -187,8 +189,11 @@ class WebsocketTransport(BaseTransport):
         self.logger.error(traceback.format_exc(10, True))
         self.logger.error("{0} {1}".format(self, error))
         self.logger.error("{0} {1}".format(error, type(error)))
-        self._on_close()
-        self.state = ConnectionState.disconnected
+        if self._on_error:
+            self._on_error(error)
+
+        # self._on_close()
+        # self.state = ConnectionState.disconnected
         # raise HubError(error)
 
     def on_message(self, app, raw_message):

@@ -41,6 +41,7 @@ class BaseHubConnection(object):
             headers=self.headers,
             on_message=self.on_message,
             get_bearer_token=get_bearer_token,
+            on_error=self.on_socket_error,
             **kwargs)
 
     def start(self):
@@ -80,6 +81,9 @@ class BaseHubConnection(object):
                 A CompletionMessage object.
         """
         self._on_error = callback
+
+    def on_socket_error(self, error):
+        self._on_error(error)
 
     def on_reconnect(self, callback):
         """Configures on_reconnect reconnection callback.
