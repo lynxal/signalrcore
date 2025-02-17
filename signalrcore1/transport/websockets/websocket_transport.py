@@ -34,7 +34,7 @@ class WebsocketTransport(BaseTransport):
         self._thread = None
         self.skip_negotiation = skip_negotiation
         self.url = url
-        self._on_error=on_error
+        self._on_error = on_error
         if headers is None:
             self.headers = dict()
         else:
@@ -213,7 +213,7 @@ class WebsocketTransport(BaseTransport):
             self.protocol.parse_messages(raw_message))
 
     def send(self, message, **kwargs):
-        self.logger.info("Sending message {0}".format(message))
+        self.logger.debug("Sending message {0}".format(message))
         try:
             self._ws.send(
                 self.protocol.encode(message),
