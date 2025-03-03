@@ -257,10 +257,7 @@ class WebsocketTransport(BaseTransport):
             self.logger.error(f"Error during start ex: {ex}")
             sleep_time = self.reconnection_handler.next()
             self.logger.error("reconnection_handler.next")
-            threading.Thread(
-                target=self.deferred_reconnect,
-                args=(sleep_time,)
-            ).start()
+            self.deferred_reconnect(sleep_time)
 
     def deferred_reconnect(self, sleep_time):
         time.sleep(sleep_time)
