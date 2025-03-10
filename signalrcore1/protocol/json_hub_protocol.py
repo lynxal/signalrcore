@@ -1,4 +1,6 @@
 import json
+from datetime import datetime
+from uuid import UUID
 
 from .base_hub_protocol import BaseHubProtocol
 
@@ -13,6 +15,10 @@ class MyEncoder(JSONEncoder):
     def default(self, o):
         if type(o) is MessageType:
             return o.value
+        if isinstance(o, UUID):
+            return o.hex
+        if isinstance(o, datetime):
+            return o.isoformat()
         data = o.__dict__
         if "invocation_id" in data:
             data["invocationId"] = data["invocation_id"]
