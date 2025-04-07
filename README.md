@@ -1,41 +1,12 @@
 # SignalR core client
-![Pypi](https://img.shields.io/pypi/v/signalrcore-new.svg)
-[![Downloads](https://pepy.tech/badge/signalrcore-new/month)](https://pepy.tech/project/signalrcore-new/month)
-[![Downloads](https://pepy.tech/badge/signalrcore-new)](https://pepy.tech/project/signalrcore-new)
-![Issues](https://img.shields.io/github/issues/mandrewcito/signalrcore-new.svg)
-![Open issues](https://img.shields.io/github/issues-raw/mandrewcito/signalrcore-new.svg)
-![codecov.io](https://codecov.io/github/mandrewcito/signalrcore-new/coverage.svg?branch=master)
 
 ![logo alt](https://raw.githubusercontent.com/mandrewcito/signalrcore/master/docs/img/logo_temp.128.svg.png)
 
 
 # Links 
 
-* [Dev to posts with library examples and implementation](https://dev.to/mandrewcito/singlar-core-python-client-58e7)
+* [github](https://github.com/lynxal/signalrcore)
 
-* [Pypi](https://pypi.org/project/signalrcore/)
-
-* [Wiki - This Doc](https://mandrewcito.github.io/signalrcore/)
-
-# Develop
-
-Test server will be avaiable in [here](https://github.com/mandrewcito/signalrcore-containertestservers) and docker compose is required.
-
-```bash
-git clone https://github.com/mandrewcito/signalrcore-containertestservers
-cd signalrcore-containertestservers
-docker-compose up
-cd ../signalrcore
-make tests
-```
-
-## Known Issues
-
-Issues related with closing sockets are inherited from the websocket-client library. Due to these problems i can't update the library to versions higher than websocket-client 0.54.0. 
-I'm working to solve it but for now its patched (Error number 1. Raises an exception, and then exception is treated for prevent errors). 
-If I update the websocket library I fall into error number 2, on local machine I can't reproduce it but travis builds fail (sometimes and randomly :()
-* [1. Closing socket error](https://github.com/slackapi/python-slackclient/issues/171)
-* [2. Random errors closing socket](https://github.com/websocket-client/websocket-client/issues/449)
 
 # A Tiny How To
 
