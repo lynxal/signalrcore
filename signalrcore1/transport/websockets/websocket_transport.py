@@ -64,7 +64,7 @@ class WebsocketTransport(BaseTransport):
         if self.get_bearer_token is not None:
             try:
                 token = self.get_bearer_token()
-                self.logger.info(f"Token: {token}")
+                self.logger.debug(f"Token: {token}")
                 self.headers["Authorization"] = "Bearer " + token
             except Exception as e:
                 self.logger.error(f"Error during initializing auth ex:{e}")
@@ -85,10 +85,10 @@ class WebsocketTransport(BaseTransport):
             return False
 
         self.state = ConnectionState.connecting
-        self.logger.info("start url:" + self.url)
+        self.logger.debug("start url:" + self.url)
 
         self.initialize_auth_header()
-        self.logger.info(f"Function start Authorization:{self.headers['Authorization']}")
+        self.logger.debug(f"Function start Authorization:{self.headers['Authorization']}")
         self._ws = websocket.WebSocketApp(
             self.url,
             header=self.headers,
@@ -104,13 +104,13 @@ class WebsocketTransport(BaseTransport):
 
     def negotiate(self):
         negotiate_url = Helpers.get_negotiate_url(self.url)
-        self.logger.info("Negotiate url:{0}".format(negotiate_url))
+        self.logger.debug("Negotiate url:{0}".format(negotiate_url))
 
         self.initialize_auth_header()
-        self.logger.info("Authorization:{0}".format(self.headers["Authorization"]))
+        self.logger.debug("Authorization:{0}".format(self.headers["Authorization"]))
         response = requests.post(
             negotiate_url, headers=self.headers, verify=self.verify_ssl)
-        self.logger.info(
+        self.logger.debug(
             "Response status code{0}".format(response.status_code))
 
         if response.status_code != 200:
@@ -133,7 +133,7 @@ class WebsocketTransport(BaseTransport):
             self.headers = {"Authorization": "Bearer " + self.token}
 
     def evaluate_handshake(self, message):
-        self.logger.info("Evaluating handshake {0}".format(message))
+        self.logger.debug("Evaluating handshake {0}".format(message))
         msg, messages = self.protocol.decode_handshake(message)
         if msg.error is None or msg.error == "":
             self.handshake_received = True
@@ -159,15 +159,15 @@ class WebsocketTransport(BaseTransport):
     def on_close(self, callback, close_status_code, close_reason):
         self.logger.warning("-- web socket close --")
         self.logger.warning(f'connection_checker.running {self.connection_checker.running}')
-        self.logger.info(close_status_code)
-        self.logger.info(close_reason)
+        self.logger.debug(close_status_code)
+        self.logger.debug(close_reason)
         self.state = ConnectionState.disconnected
         if self._on_close is not None and callable(self._on_close):
             self._on_close()
         if callback is not None and callable(callback):
             callback()
         if close_status_code is None:
-            self.logger.info("Send ping for reconnect")
+            self.logger.debug("Send ping for reconnect")
             self.send(PingMessage())
 
     def on_reconnect(self):
@@ -264,7 +264,7 @@ class WebsocketTransport(BaseTransport):
         try:
             self.logger.warning("deferred_reconnect")
             if not self.connection_alive:
-                self.logger.info("connection_alive")
+                self.logger.debug("connection_alive")
                 self.send(PingMessage())
         except Exception as ex:
             self.logger.error(ex)
