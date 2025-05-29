@@ -53,6 +53,7 @@ class WebsocketTransport(BaseTransport):
             keep_alive_interval
         )
         self.reconnection_handler = reconnection_handler
+        self.reconnect_in_any_case = True
 
         if len(self.logger.handlers) > 0:
             websocket.enableTrace(self.enable_trace, self.logger.handlers[0])
@@ -69,10 +70,11 @@ class WebsocketTransport(BaseTransport):
             except Exception as e:
                 self.logger.error(f"Error during initializing auth ex:{e}")
 
-    def stop(self, keep_alive=False):
+    def stop(self, reconnect_in_any_case=False):
         self.logger.warning(f'stop: connection_checker.running {self.connection_checker.running}')
         self.connection_checker.stop()
-        self._ws.close(keep_alive)
+        self.reconnect_in_any_case = reconnect_in_any_case
+        self._ws.close()
         self.state = ConnectionState.disconnected
         self.handshake_received = False
 
@@ -166,7 +168,7 @@ class WebsocketTransport(BaseTransport):
             self._on_close()
         if callback is not None and callable(callback):
             callback()
-        if close_status_code is not None:
+        if close_status_code is None and self.reconnect_in_any_case:
             self.logger.debug("Send ping for reconnect")
             self.send(PingMessage())
 
