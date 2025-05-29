@@ -69,10 +69,10 @@ class WebsocketTransport(BaseTransport):
             except Exception as e:
                 self.logger.error(f"Error during initializing auth ex:{e}")
 
-    def stop(self):
+    def stop(self, keep_alive=False):
         self.logger.warning(f'stop: connection_checker.running {self.connection_checker.running}')
         self.connection_checker.stop()
-        self._ws.close()
+        self._ws.close(keep_alive)
         self.state = ConnectionState.disconnected
         self.handshake_received = False
 
@@ -145,7 +145,7 @@ class WebsocketTransport(BaseTransport):
         else:
             self.logger.error(f"evaluate_handshake message: {msg.error}")
             self.on_socket_error(self._ws, msg.error)
-            self.stop()
+            self.stop(True)
             self.state = ConnectionState.disconnected
             # reconnect
             # self.send(PingMessage())
@@ -159,14 +159,14 @@ class WebsocketTransport(BaseTransport):
     def on_close(self, callback, close_status_code, close_reason):
         self.logger.warning("-- web socket close --")
         self.logger.warning(f'connection_checker.running {self.connection_checker.running}')
-        self.logger.debug(close_status_code)
-        self.logger.debug(close_reason)
+        self.logger.info(close_status_code)
+        self.logger.info(close_reason)
         self.state = ConnectionState.disconnected
         if self._on_close is not None and callable(self._on_close):
             self._on_close()
         if callback is not None and callable(callback):
             callback()
-        if close_status_code is None:
+        if close_status_code is not None:
             self.logger.debug("Send ping for reconnect")
             self.send(PingMessage())
 
@@ -249,7 +249,7 @@ class WebsocketTransport(BaseTransport):
         self.reconnection_handler.reconnecting = True
         try:
             try:
-                self.stop()
+                self.stop(True)
             except Exception as e:
                 self.logger.error(f"Error during stop ex: {e}")
             self.start()
