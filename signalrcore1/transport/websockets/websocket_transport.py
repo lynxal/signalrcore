@@ -74,7 +74,8 @@ class WebsocketTransport(BaseTransport):
         self.logger.warning(f'stop: connection_checker.running {self.connection_checker.running}')
         self.connection_checker.stop()
         self.reconnect_in_any_case = reconnect_in_any_case
-        self._ws.close()
+        if self._ws is not None:
+            self._ws.close()
         self.state = ConnectionState.disconnected
         self.handshake_received = False
 
